@@ -15,19 +15,13 @@ cwd = os.getcwd()
 cwd
 
 
-# In[2]:
+# In[29]:
 
 
-get_ipython().run_cell_magic('time', '', "df = pd.read_csv('NY property csv.csv')")
+get_ipython().run_cell_magic('time', '', "df = pd.read_csv('C:\\\\Users\\\\beizh\\\\Desktop\\\\fraud analytics\\\\Class 1\\\\HW\\\\NY property csv.csv')")
 
 
-# In[3]:
-
-
-df.head()
-
-
-# In[4]:
+# In[30]:
 
 
 # Create new variable BORO
@@ -38,16 +32,25 @@ df['BORO'] = df.BBLE.str[0]
 # plt.xlim(0,500)
 
 
-# In[5]:
+# In[31]:
 
 
 # ZIP, group by BORO, BLOCK
-# df['ZIP'] = df.groupby(['BBLE'])['ZIP'].transform(lambda x: x.fillna(x.mean())).astype('int')
-# BBLE
+df = df.sort_values(by = ['BBLE'])
+df['ZIP'].fillna('ffill',inplace = True)
+
+# np.isnan(df['ZIP']).sum()
 
 
-# In[179]:
+# In[15]:
 
+
+df['ll_rate'] = df['LTFRONT']/df['LTDEPTH']
+
+
+mean_llrate = np.mean(df['ll_rate'].dropna())
+df['LTFRONT'] = df['LTFRONT'].fillna(value = (df['LTDEPTH'] * mean_llrate))
+df['LTFRONT'] = df['LTDEPTH'].fillna(value = (df['LTFRONT'] / mean_llrate))
 
 np.std(df['LTFRONT'])
 # std = 73.7 without group
@@ -56,16 +59,20 @@ df.loc[df['LTFRONT'] == 0, 'LTFRONT'] = np.nan
 # df['LTFRONT'] = df['LTFRONT'].replace(0,np.nan)
 
 # fill NA with average values grouped by BORO (if using TAXCLASS as well, the filled values will be too big and there will be 2 missing values)
-df['LTFRONT'] = df.groupby(['BORO'])['LTFRONT'].transform(lambda x: x.fillna(x.mean()))
+df['LTFRONT'] = df.groupby(['BORO','TAXCLASS'])['LTFRONT'].transform(lambda x: x.fillna(x.mean()))
+df['LTFRONT'] = df.groupby(['TAXCLASS'])['LTFRONT'].transform(lambda x: x.fillna(x.mean()))
+
 
 np.isnan(df['LTFRONT']).sum()
 
 
-# In[180]:
+# In[16]:
 
 
 df.loc[df['LTDEPTH'] == 0, 'LTDEPTH'] = np.nan
-df['LTDEPTH'] = df.groupby(['BORO'])['LTDEPTH'].transform(lambda x: x.fillna(x.mean()))
+df['LTDEPTH'] = df.groupby(['BORO','TAXCLASS'])['LTDEPTH'].transform(lambda x: x.fillna(x.mean()))
+df['LTDEPTH'] = df.groupby(['TAXCLASS'])['LTDEPTH'].transform(lambda x: x.fillna(x.mean()))
+
 np.isnan(df['LTDEPTH']).sum()
 
 
@@ -86,21 +93,28 @@ df['BLDFRONT'] = df['BLDFRONT'].fillna(value = (df['BLDDEPTH'] * median_bbrate))
 df['BLDDEPTH'] = df['BLDDEPTH'].fillna(value = (df['BLDFRONT'] / median_bbrate))
 
 
-# In[189]:
+# In[19]:
 
 
 # For BLDFRONT and BLDDEPTH, if group by both BORO and TAXCLASS, there will appear NaN as well.
-df['BLDFRONT'] = df.groupby(['BORO'])['BLDFRONT'].transform(lambda x: x.fillna(x.mean()))
+df['BLDFRONT'] = df.groupby(['BORO','TAXCLASS'])['BLDFRONT'].transform(lambda x: x.fillna(x.mean()))
+df['BLDFRONT'] = df.groupby(['TAXCLASS'])['BLDFRONT'].transform(lambda x: x.fillna(x.mean()))
 
 # np.isnan(df['BLDFRONT']).sum()
-df['BLDDEPTH'] = df.groupby(['BORO'])['BLDDEPTH'].transform(lambda x: x.fillna(x.mean()))
+df['BLDDEPTH'] = df.groupby(['BORO','TAXCLASS'])['BLDDEPTH'].transform(lambda x: x.fillna(x.mean()))
+df['BLDDEPTH'] = df.groupby(['TAXCLASS'])['BLDDEPTH'].transform(lambda x: x.fillna(x.mean()))
+
+np.isnan(df['BLDFRONT']).sum()
+np.isnan(df['BLDDEPTH']).sum()
 
 
-# In[193]:
+# In[35]:
 
 
-# STORIES, group by TAXCLASS
+df['STORIES'] = df.groupby(['ZIP','TAXCLASS'])['STORIES'].transform(lambda x: x.fillna(x.mean()))
 df['STORIES'] = df.groupby(['TAXCLASS'])['STORIES'].transform(lambda x: x.fillna(x.mean()))
+
+np.isnan(df['STORIES']).sum()
 
 
 # In[194]:
