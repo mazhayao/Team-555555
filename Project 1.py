@@ -18,7 +18,7 @@ cwd
 # In[2]:
 
 
-get_ipython().run_cell_magic('time', '', "df = pd.read_csv('C:\\\\Users\\\\beizh\\\\Desktop\\\\fraud analytics\\\\Class 1\\\\HW\\\\NY property csv.csv')")
+get_ipython().run_cell_magic('time', '', "df = pd.read_csv('NY property csv.csv')")
 
 
 # In[3]:
