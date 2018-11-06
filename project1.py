@@ -18,7 +18,7 @@ cwd
 # In[29]:
 
 
-get_ipython().run_cell_magic('time', '', "df = pd.read_csv('C:\\\\Users\\\\beizh\\\\Desktop\\\\fraud analytics\\\\Class 1\\\\HW\\\\NY property csv.csv')")
+df = pd.read_csv('NY property csv.csv')
 
 
 # In[30]:
@@ -35,11 +35,9 @@ df['BORO'] = df.BBLE.str[0]
 # In[31]:
 
 
-# ZIP, group by BORO, BLOCK
+# ZIP, sort by BBLE and forward fill
 df = df.sort_values(by = ['BBLE'])
-df['ZIP'].fillna('ffill',inplace = True)
-
-# np.isnan(df['ZIP']).sum()
+df['ZIP'].fillna(method='ffill',inplace = True)
 
 
 # In[15]:
